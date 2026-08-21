@@ -48,6 +48,46 @@ def parse_job_detail(html: str, url: str) -> Optional[Dict[str, str]]:
     soup = BeautifulSoup(html, 'html.parser')
     
     try:
+        # FIRST: Try to extract from JSON-LD structured data (most reliable)
+        json_ld = soup.find('script', type='application/ld+json')
+        if json_ld:
+            import json
+            try:
+                data = json.loads(json_ld.string)
+                if data.get('@type') == 'JobPosting':
+                    # Extract from structured data
+                    job_location = data.get('jobLocation', {}).get('address', {})
+                    location_parts = []
+                    if job_location.get('addressLocality'):
+                        location_parts.append(job_location['addressLocality'])
+                    if job_location.get('addressRegion'):
+                        location_parts.append(job_location['addressRegion'])
+                    if job_location.get('postalCode'):
+                        location_parts.append(job_location['postalCode'])
+                    
+                    location = ', '.join(location_parts) if location_parts else None
+                    
+                    # Clean description (remove HTML tags)
+                    description = data.get('description', '')
+                    if description:
+                        description = re.sub(r'<[^>]+>', '', description)
+                        description = re.sub(r'\s+', ' ', description).strip()
+                        if len(description) > 5000:
+                            description = description[:5000] + '...'
+                    
+                    return {
+                        'jobTitle': data.get('title'),
+                        'company': data.get('hiringOrganization', {}).get('name'),
+                        'location': location,
+                        'salary': data.get('baseSalary', {}).get('value', {}).get('value') if isinstance(data.get('baseSalary'), dict) else None,
+                        'jobType': data.get('employmentType'),
+                        'description': description,
+                        'url': url
+                    }
+            except (json.JSONDecodeError, KeyError) as e:
+                print(f'⚠️  JSON-LD parsing failed, falling back to HTML: {e}')
+        
+        # FALLBACK: HTML parsing
         # Extract job title (usually in h1)
         title_elem = soup.find('h1')
         job_title = title_elem.get_text(strip=True) if title_elem else None
