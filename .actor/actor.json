@@ -1,0 +1,62 @@
+{
+  "actorSpecification": 1,
+  "name": "employment-hero-scraper",
+  "title": "Employment Hero Jobs Scraper — Australia Careers",
+  "description": "Extract job listings from Employment Hero's Australian job board. Returns job title, company, location, salary, job type, and full descriptions. Built for recruiters, job seekers, and market researchers. Works with Claude, ChatGPT, and AI agents via Apify MCP integration.",
+  "version": "0.1",
+  "buildTag": "latest",
+  "dockerfile": "./Dockerfile",
+  "output": {
+    "actorOutputSchemaVersion": 1,
+    "properties": {
+      "jobTitle": {
+        "type": "string",
+        "title": "Job Title",
+        "description": "Position title",
+        "template": "{{{jobTitle}}}"
+      },
+      "company": {
+        "type": "string",
+        "title": "Company",
+        "description": "Employer name",
+        "template": "{{{company}}}"
+      },
+      "location": {
+        "type": "string",
+        "title": "Location",
+        "description": "Job location (city, state)",
+        "template": "{{{location}}}"
+      },
+      "salary": {
+        "type": "string",
+        "title": "Salary",
+        "description": "Salary range or rate",
+        "template": "{{{salary}}}"
+      },
+      "jobType": {
+        "type": "string",
+        "title": "Job Type",
+        "description": "Employment type (Full-time, Part-time, Casual, etc.)",
+        "template": "{{{jobType}}}"
+      },
+      "description": {
+        "type": "string",
+        "title": "Description",
+        "description": "Full job description",
+        "template": "{{{description}}}"
+      },
+      "url": {
+        "type": "string",
+        "title": "URL",
+        "description": "Job posting URL",
+        "template": "{{{url}}}"
+      },
+      "scrapedAt": {
+        "type": "string",
+        "title": "Scraped At",
+        "description": "Timestamp when data was collected",
+        "template": "{{{scrapedAt}}}"
+      }
+    }
+  }
+}
