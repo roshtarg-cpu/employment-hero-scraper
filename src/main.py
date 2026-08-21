@@ -108,3 +108,22 @@ async def main():
         Actor.log.info(f'✅ Successfully scraped: {scraped_count} jobs')
         Actor.log.info(f'❌ Failed: {failed_count} jobs')
         Actor.log.info(f'📊 Total processed: {len(job_links)} jobs')
+        
+        # CRITICAL: Save task context for debugging and recovery
+        await Actor.set_value('SAVED-TASK', {
+            'actorId': Actor.get_env().get('actor_id'),
+            'actorRunId': Actor.get_env().get('actor_run_id'),
+            'defaultDatasetId': Actor.get_env().get('default_dataset_id'),
+            'startedAt': Actor.get_env().get('started_at'),
+            'input': actor_input,
+            'stats': {
+                'itemsScraped': scraped_count,
+                'itemsFailed': failed_count,
+                'totalProcessed': len(job_links),
+                'searchQuery': search_query or 'all jobs',
+                'location': location or 'all locations',
+                'maxResults': max_results
+            }
+        })
+        
+        Actor.log.info('💾 Task context saved to SAVED-TASK')
