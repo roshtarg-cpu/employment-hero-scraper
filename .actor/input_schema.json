@@ -1,4 +1,5 @@
 {
+  "title": "Employment Hero Scraper Input",
   "schemaVersion": 1,
   "properties": {
     "searchQuery": {
